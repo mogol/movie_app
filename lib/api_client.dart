@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 
 import 'dart:async';
-
 import 'model.dart';
 
 import 'dart:convert';
@@ -22,6 +21,11 @@ class APIClient {
             title: map['title'],
             overview: map['overview'],
             imageUri: 'https://image.tmdb.org/t/p/w500${map['poster_path']}',
+            backdropUri:
+                'https://image.tmdb.org/t/p/w1280${map['backdrop_path']}',
+            releaseDate: map['release_date'],
+            voteAverage: map['vote_average'] + 0.0,
+            voteCount: map['vote_count'],
           ),
     );
     return movies.toList(growable: false);
