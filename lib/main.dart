@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
 }
 
 class PopularMoviesWidget extends StatelessWidget {
-  final List<Movie> movies = Movie.allMovies();
   final _apiClient = new APIClient();
 
   @override
@@ -50,7 +49,11 @@ class PopularMoviesWidget extends StatelessWidget {
                       final movie = movies[i];
                       return new ListTile(
                         title: new Text(movie.title),
-                        subtitle: new Text(movie.overview, maxLines: 2,),
+                        subtitle: new Text(
+                          movie.overview,
+                          maxLines: 2,
+                        ),
+                        leading: new Image.network(movie.imageUri),
                         isThreeLine: true,
                         onTap: () =>
                             Navigator.of(context).push(_showDetails(movie)),
@@ -87,17 +90,12 @@ class MovieDetails extends StatelessWidget {
 }
 
 class Movie {
-  Movie({@required this.title, @required this.overview});
+  Movie(
+      {@required this.title, @required this.overview, @required this.imageUri});
 
   final String title;
   final String overview;
-
-  static List<Movie> allMovies() {
-    final list = new List<int>.generate(10, (i) => i + 1);
-    return list
-        .map((i) => new Movie(title: "Title $i", overview: "Overview $i"))
-        .toList(growable: false);
-  }
+  final String imageUri;
 }
 
 class APIClient {
@@ -112,7 +110,12 @@ class APIClient {
     final Map data = JSON.decode(response.body);
     final List<Map> moviesData = data['results'];
     final movies = moviesData.map(
-        (map) => new Movie(title: map['title'], overview: map['overview']));
+      (map) => new Movie(
+            title: map['title'],
+            overview: map['overview'],
+            imageUri: 'https://image.tmdb.org/t/p/w500${map['poster_path']}',
+          ),
+    );
     return movies.toList(growable: false);
   }
 }
