@@ -1,14 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'api_client.dart';
 
 import 'model.dart';
 
-class PopularMoviesWidget extends StatelessWidget {
+class PopularMoviesWidget extends StatefulWidget {
   final APIClient apiClient;
   final MovieCallback onMovieTap;
 
   PopularMoviesWidget({@required this.apiClient, @required this.onMovieTap});
+
+  @override
+  _PopularMoviesWidgetState createState() => new _PopularMoviesWidgetState();
+}
+
+class _PopularMoviesWidgetState extends State<PopularMoviesWidget> {
+  Future<List<Movie>> movies;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +26,7 @@ class PopularMoviesWidget extends StatelessWidget {
         title: new Text("Popular"),
       ),
       body: new FutureBuilder(
-          future: apiClient.getPopularMovies(),
+          future: movies,
           builder: (BuildContext context, AsyncSnapshot<List<Movie>> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -32,13 +41,19 @@ class PopularMoviesWidget extends StatelessWidget {
                     itemCount: movies.length,
                     itemBuilder: (context, i) => new _MovieListTile(
                           movie: movies[i],
-                          onTap: () => onMovieTap(movies[i]),
+                          onTap: () => widget.onMovieTap(movies[i]),
                         ),
                   );
                 }
             }
           }),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    movies = widget.apiClient.getPopularMovies();
   }
 }
 
